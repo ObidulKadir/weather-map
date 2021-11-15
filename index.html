@@ -7,13 +7,16 @@
     <title>Weather map</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montagu+Slab:wght@100;300;400;600&family=Montserrat:ital,wght@1,100&family=Poppins:ital,wght@1,100&family=Roboto:wght@100&display=swap" rel="stylesheet">
+    </head>
 <body>
     <header>
         <div class="input-data">
             <div class="row input-area"> 
                 <div class="col-md-6 ml-auto">
-                    <input type="text" class="form-control" placeholder="please enter the sate name">
+                    <input type="text" id="input-city" class="form-control" placeholder="please enter the city name to weather check">
                 </div>
                 <div class="col-md-4">
                     <button id="btn-search" class="btn btn-outline-dark">Search</button>
@@ -22,17 +25,81 @@
 
         </div>
         <div class="display-area">
-            <div id="title">city name</div>
-            <div class="temp-data">hello</div>
-            <div class="icon-data d-flex justify-content-around">
-                <div>hello</div>
-                <div>description</div>
+            <div id="title"></div>
+            <div id="temp-data" ><span id="temp-value" ></span></div>
+            <div class="icon-data d-flex  align-items-center">
+                <img src="@" alt="" id="icon">
+                <div id="description"></div>
             </div>
-            <div class="wind">hello wind</div>
+            <div id="humidity"></div>
 
         </div>
     </header>
+    <script>
+        
+        // api key could be changed user to user
+        function getWeather(city, apiKey="cdbbbe41fa2b9317d3eab6229cecaa11"){
+            fetch( "https://api.openweathermap.org/data/2.5/weather?q=" +
+                city +
+                "&units=metric&appid="+apiKey)
+                .then((response) => {
+                    if(!response.ok){
+                        alert("No weather found.Check the input city name and api key!! ");
+                        
+                    }else{
+                        return response.json();
+                    }
+                })
+                .then(data => displayData(data))
+               
+        }
+        
+        function displayData(data){
 
+            
+            const {temp, humidity} = data.main;
+            const {icon, description} = data.weather[0];
+            const {speed:wind} = data.wind;
+
+            const titleName = document.getElementById('title')
+            titleName.innerText = `Weather in `+ data.name;
+            styleChange(titleName)
+
+            let tempData = document.getElementById('temp-value');
+            tempData.innerText = temp + ` °C `;
+            styleChange(tempData)
+           
+            const imagIcon = document.getElementById('icon')
+            imagIcon.src= `https://openweathermap.org/img/wn/`+icon+`@2x.png`;
+            styleChange(imagIcon)
+
+            const descriptions = document.getElementById('description');
+            descriptions.innerText = description;
+
+            styleChange(descriptions)
+
+            const humidityNo = document.getElementById('humidity')
+            humidityNo.innerText = `Humidity is : `+humidity;
+            styleChange(humidityNo)
+
+        }
+        function styleChange(idName){
+            
+            idName.style.fontSize = "40px";
+            idName.style.color ="#fff";
+            idName.style.fontFamily=`'Montserrat', sans-serif`;
+            idName.style.fontWeight = "900"
+        }
+
+        document.getElementById('btn-search').addEventListener('click', function(){
+            const city = document.getElementById('input-city').value;
+            document.getElementById('input-city').value = "";
+            // console.log(city);
+            getWeather(city);
+            
+        })
+        
+    </script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
